@@ -263,17 +263,21 @@ poll.
 ### M3 — Room settings and voting modes
 
 - [ ] Settings panel (admin only), editable after creation:
-  - max number of items
+  - room name
+  - max number of items (empty = no limit; can't go below the current count)
   - vote mode: **thumbs** (up/down per item) or **budget** ("X votes out of Y":
-    each member gets N votes to spread)
+    each member gets N votes to spread, 1–100)
   - allow duplicate votes on one item (budget mode only)
 - [ ] Budget mode reuses the vote endpoint: `PUT .../vote` with `{count: n}`
       sets how many of your votes are on that item (still idempotent);
       `count` > 1 only when duplicates are allowed; the server rejects totals
       over the member's budget.
-- [ ] **Lock in:** admin locks the room → items and votes are frozen, the top
-      pick is highlighted. Admin can unlock.
+- [ ] **Lock in:** admin locks the room → options, votes, columns and comments
+      are frozen, and the top pick (or a tie) is highlighted. Admin can unlock.
+      Settings can't change while locked.
 - [ ] Backend enforces all of the above (not just the UI).
+- [ ] "Add several at once" becomes a table with the room's columns; rows can
+      be pasted from a spreadsheet (tab-separated).
 
 ### M4 — Admins and members
 
@@ -306,6 +310,21 @@ poll.
   research — neither offers a public listing API, and scraping is fragile and may
   break their terms, so start with Open Graph tags (title, image) only.
 - Realtime upgrade (SSE or hosted pub/sub) if polling isn't enough.
+- **mTLS for API connections.** Require a client certificate on connections
+  to `api.pick.rajwalgautam.com`, so only our own code can reach it. Needs
+  design first:
+  - Today the browser calls the API directly, and every visitor's browser would
+    need its own installed client certificate, which isn't workable. mTLS only
+    fits if browsers stop calling the API directly: the Next.js server (or a
+    proxy) calls the API with one client certificate, and the browser talks
+    only to the Next.js server.
+  - That moves API traffic through Vercel functions on the frontend project
+    too, roughly doubling function invocations against the free-tier limits.
+  - Check whether Vercel can enforce client certificates on a custom domain
+    at all (not confirmed). If not, the API needs a host or front proxy that
+    can, e.g. Cloudflare's mTLS rules.
+  - Until then, the protections are HTTPS, the origin check, room passcodes,
+    member tokens and the M5 rate limits.
 
 ---
 
@@ -333,6 +352,14 @@ poll.
   Any member edits item titles and values.
 - **2026-10-29 — Default sort:** most votes first. "Manual order" is one of the
   sort options; dragging only works in it.
+- **2026-10-29 — Switching vote mode clears all votes:** thumbs votes (±1) and
+  budget votes (counts) don't convert into each other. Turning off duplicate
+  votes caps everyone at one vote per option. Lowering the budget below what
+  someone has used keeps their votes; they just can't add more until they take
+  some back.
+- **2026-10-29 — Bulk add is a table:** with columns in the room, a list of
+  titles isn't enough, so bulk add takes rows with column values. Pasted text
+  splits on tabs and new lines only (not commas), so titles can contain commas.
 - **2026-10-29 — `items.fields`:** column values live in `fields`, not
   `values` (a reserved word in SQL).
 
