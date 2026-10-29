@@ -75,8 +75,9 @@ design:
 - Start at 5s; back off to 30s after a couple of minutes with no changes; reset
   on any local action.
 - The response includes an `updatedAt` per room. The client sends
-  `?since=<updatedAt>` and gets `304 Not Modified` when nothing changed, which
-  keeps responses tiny. The database lookup still happens, though.
+  `?since=<updatedAt>` and gets a tiny `200 {"unchanged":true}` when nothing
+  changed. Not `304`: Vercel strips CORS headers from 304 responses, so
+  browsers reject them. The database lookup still happens, though.
 - If the free limits are hit anyway, the fallback is a manual "refresh" button,
   not a paid plan.
 
@@ -132,7 +133,7 @@ rooms        id*, slug*, name*, passcode_hash*, created_at*,
              allow_duplicate_votes, everyone_admin, locked_at
 members      id*, room_id*, display_name*, token_hash*, is_admin*, created_at*
 columns      id, room_id, name, type ('text' | 'boolean' | 'textarea'), position
-items        id*, room_id*, title*, values (jsonb), position, created_by*, created_at*
+items        id*, room_id*, title*, fields (jsonb), position, created_by*, created_at*
 votes        id*, room_id*, item_id*, member_id*, value* (+1 / -1 in thumbs mode;
              1..N votes placed on the item in budget mode), created_at*, updated_at*
 comments     id, room_id, item_id, member_id, body, created_at, edited_at
@@ -214,7 +215,7 @@ other's changes within a few seconds.
 
 - [ ] Admin can add/rename/delete columns: `text` (single line), `boolean`,
       `textarea`.
-- [ ] Items get editable values per column (stored in `items.values`).
+- [ ] Items get editable values per column (stored in `items.fields`).
 - [ ] Room view becomes a comparison table (items as rows, columns as columns),
       with a card layout on mobile.
 - [ ] Drag to reorder columns and items (`@dnd-kit`, as in `workouts-ui`);
@@ -324,6 +325,16 @@ poll.
   `{count: n}`), `DELETE` to clear. Idempotent, so retries are safe.
 - **2026-10-29 — Rejoining:** display names are unique per room. Joining from a
   new device means picking a new name. Revisit in M4.
+
+- **2026-10-29 — Bulk add (added to M1):** paste options separated by new
+  lines or commas; one request, max 50, duplicates (ignoring case) skipped.
+- **2026-10-29 — M2 permissions:** only admins add/rename/delete/reorder
+  columns and set the manual item order, since those are shared by everyone.
+  Any member edits item titles and values.
+- **2026-10-29 — Default sort:** most votes first. "Manual order" is one of the
+  sort options; dragging only works in it.
+- **2026-10-29 — `items.fields`:** column values live in `fields`, not
+  `values` (a reserved word in SQL).
 
 ## Open questions
 
