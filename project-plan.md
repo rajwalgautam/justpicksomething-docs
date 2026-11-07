@@ -281,6 +281,24 @@ poll.
 
 ### M4 — Joining, templates, and members
 
+#### Landing page
+
+The home page becomes a landing page, centered and readable on phones and
+desktops:
+
+- [ ] A large "Just Pick Something" title (scales from phone to desktop
+      sizes) with the tagline "Make a room, add options, vote, and stop
+      arguing about it."
+- [ ] Under it, **"I want to decide on…"** with a dropdown: Rental homes,
+      Hotels, Restaurants, Custom. Nothing else shows until something is picked.
+- [ ] Once picked: the room name (pre-filled from the choice) and your name,
+      then a row with an **Advanced options** text button on the left and the
+      filled **Create room** button on the right. Advanced options opens the
+      column checklist for the chosen template (hidden for Custom, which starts
+      with no columns).
+- [ ] Joining moves to a "Have a room code? Join a room" link under the
+      create flow that opens the join form; "Your rooms" sits below that.
+
 #### Join a room from the home page
 
 Today you can only join by opening the room link. The home page gets a second
@@ -300,9 +318,9 @@ room. A template pre-creates columns; you choose which ones with a
 multi-select (checkboxes, sensible ones pre-checked). Rooms made from a
 template are normal rooms: columns can still be added, renamed or deleted.
 
-- [ ] Home page "Create a room" offers **Start from scratch**, **Rental houses**,
-      **Hotels**, **Restaurants**. Picking a template shows its columns as
-      checkboxes and a suggested room name.
+- [ ] The landing page's dropdown offers **Rental homes**, **Hotels**,
+      **Restaurants** and **Custom** (no columns). A template's columns appear as
+      checkboxes under Advanced options, with a suggested room name.
 - [ ] `POST /rooms` accepts `columns: [{name, type}]` (max 20) and creates them
       in the same transaction as the room, so a template room is one request.
 - [ ] Templates are built into the frontend as constants (no database table
@@ -312,7 +330,7 @@ Column types are only short text, yes/no and long text, so numbers and
 prices are short text (natural sort still orders `2` before `10`). ✓ = checked
 by default.
 
-| Rental houses | Type | | Hotels | Type | | Restaurants | Type |
+| Rental homes | Type | | Hotels | Type | | Restaurants | Type |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | ✓ Link | text | | ✓ Link | text | | ✓ Link | text |
 | ✓ Price per night | text | | ✓ Price per night | text | | ✓ Cuisine | text |
@@ -442,7 +460,7 @@ member tokens, per-room scoping in every query, request size limits, generic
   `values` (a reserved word in SQL).
 
 - **2026-11-07 — Templates are frontend constants:** three built-in templates
-  (Rental houses, Hotels, Restaurants) with a column checklist; the API only
+  (Rental homes, Hotels, Restaurants) with a column checklist; the API only
   learns about the chosen columns via `POST /rooms`. A templates table waits
   until there are user-submitted templates.
 
