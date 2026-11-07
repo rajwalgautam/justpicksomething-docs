@@ -283,24 +283,30 @@ poll.
 
 #### Landing page
 
-The home page becomes a landing page, centered and readable on phones and
+The home page is a simple landing page, centered and readable on phones and
 desktops:
 
 - [ ] A large "Just Pick Something" title (scales from phone to desktop
       sizes) with the tagline "Make a room, add options, vote, and stop
       arguing about it."
-- [ ] Under it, **"I want to decide on…"** with a dropdown: Rental homes,
-      Hotels, Restaurants, Custom. Nothing else shows until something is picked.
-- [ ] Once picked: the room name (pre-filled from the choice) and your name,
-      then a row with an **Advanced options** text button on the left and the
-      filled **Create room** button on the right. Advanced options opens the
-      column checklist for the chosen template (hidden for Custom, which starts
-      with no columns).
-- [ ] In the room, the votes column is the first column of the table, so
-      voting stays in view when there are many columns, and "Add several at
-      once" is collapsed until opened and starts with one row.
-- [ ] Joining moves to a "Have a room code? Join a room" link under the
-      create flow that opens the join form; "Your rooms" sits below that.
+- [ ] Under it, two big tiles: **Decide** ("Start a new Decision") and **Keep
+      Deciding** ("Join an existing Decision"). "Decision" is capitalized on
+      purpose, as a proper noun. Picking a tile replaces the tiles with that
+      flow, with a "← Back" link to return.
+- [ ] **Decide:** "I want to decide on…" with a dropdown (Rental homes,
+      Hotels, Restaurants, Custom). Once picked: the room name (pre-filled) and
+      your name, then **Advanced options** on the left (the template's column
+      checklist; hidden for Custom) and the filled **Create room** button on the
+      right.
+- [ ] **Keep Deciding:** the "Join a room" form, with "Your rooms" under it.
+- [ ] In the room, votes then comments are the first columns of the table,
+      so they stay in view when there are many columns.
+- [ ] Adding options happens in an input row at the bottom of the table, lined
+      up with its columns (title plus a value per column). Enter adds it and it
+      appears in the table. Pasting rows from a spreadsheet fills several input
+      rows to add at once; helper text under the row says so. This replaces the
+      separate "Add an option" box and "Add several at once" section. On
+      phones the same input is a card under the option cards.
 
 #### Join a room from the home page
 
@@ -329,9 +335,12 @@ template are normal rooms: columns can still be added, renamed or deleted.
 - [ ] Templates are built into the frontend as constants (no database table
       yet). User-submitted templates stay in "Later".
 - [ ] Template columns can offer alternative names, switched with a small
-      dropdown in the checklist (e.g. "Price per night" → "Total price" or
-      "Price per person"). Only affects the create form: the room just gets a
-      column with the chosen name.
+      dropdown in the checklist. Alternatives are only other wordings of the
+      same thing: Price per night / Total price, Distance / Drive time, Sleeps /
+      Max guests, Link / Listing, Guest rating / Review score, Rating / Google
+      rating / Yelp rating. Anything that means something different (Price per
+      person, Location, Menu, Vegan options) is its own column. Only affects
+      the create form: the room just gets a column with the chosen name.
 
 Column types are only short text, yes/no and long text, so numbers and
 prices are short text (natural sort still orders `2` before `10`). ✓ = checked
@@ -340,17 +349,21 @@ by default; defaults are deliberately minimal (five each), the rest are opt-in.
 | Rental homes | Type | | Hotels | Type | | Restaurants | Type |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | ✓ Link | text | | ✓ Link | text | | ✓ Link | text |
-| ✓ Price per night | text | | ✓ Price per night | text | | ✓ Cuisine | text |
-| ✓ Bedrooms | text | | Star rating | text | | ✓ Price range | text |
-| ✓ Bathrooms | text | | ✓ Guest rating | text | | ✓ Neighborhood | text |
-| Sleeps | text | | ✓ Neighborhood | text | | Rating | text |
-| Location | text | | Free breakfast | yes/no | | Takes reservations | yes/no |
-| Hot tub | yes/no | | Free cancellation | yes/no | | Vegetarian options | yes/no |
-| Pool table | yes/no | | Pool | yes/no | | Outdoor seating | yes/no |
-| Pool | yes/no | | Gym | yes/no | | Kid friendly | yes/no |
-| Pet friendly | yes/no | | Parking | yes/no | | Open late | yes/no |
-| Parking | yes/no | | Pet friendly | yes/no | | ✓ Notes | long text |
-| ✓ Notes | long text | | ✓ Notes | long text | | | |
+| ✓ Price per night | text | | ✓ Price per night | text | | Menu | text |
+| Price per person | text | | Star rating | text | | ✓ Cuisine | text |
+| ✓ Bedrooms | text | | ✓ Guest rating | text | | ✓ Price range | text |
+| ✓ Bathrooms | text | | ✓ Neighborhood | text | | Price per person | text |
+| Sleeps | text | | Distance | text | | ✓ Neighborhood | text |
+| Location | text | | Free breakfast | yes/no | | Distance | text |
+| Distance | text | | Free cancellation | yes/no | | Rating | text |
+| Hot tub | yes/no | | Pool | yes/no | | Takes reservations | yes/no |
+| Pool table | yes/no | | Gym | yes/no | | Vegetarian options | yes/no |
+| Pool | yes/no | | Parking | yes/no | | Vegan options | yes/no |
+| Pet friendly | yes/no | | Pet friendly | yes/no | | Gluten-free options | yes/no |
+| Parking | yes/no | | ✓ Notes | long text | | Outdoor seating | yes/no |
+| ✓ Notes | long text | |  |  | | Kid friendly | yes/no |
+|  |  | |  |  | | Open late | yes/no |
+|  |  | |  |  | | ✓ Notes | long text |
 
 #### Admins and members
 
