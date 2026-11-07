@@ -407,9 +407,10 @@ by default; defaults are deliberately minimal (five each), the rest are opt-in.
 - **More templates:** a separate templates tab, user-submitted templates, and
   templates that also set room settings (e.g. limited votes). Built-in
   templates are in M4.
-- **Paste enrichment:** pasting an Airbnb or VRBO link pre-fills columns. Needs
-  research — neither offers a public listing API, and scraping is fragile and may
-  break their terms, so start with Open Graph tags (title, image) only.
+- **Paste enrichment:** pasting an Airbnb or VRBO link pre-fills columns. See
+  the [link import plan](link-import.md): Airbnb pages can be read server-side
+  (no price); VRBO blocks server fetches with a captcha and needs a
+  bookmarklet.
 - Realtime upgrade (SSE or hosted pub/sub) if polling isn't enough.
 - **mTLS for API connections.** Require a client certificate on connections
   to `api.pick.rajwalgautam.com`, so only our own code can reach it. Needs
