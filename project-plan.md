@@ -296,6 +296,9 @@ desktops:
       filled **Create room** button on the right. Advanced options opens the
       column checklist for the chosen template (hidden for Custom, which starts
       with no columns).
+- [ ] In the room, the votes column is the first column of the table, so
+      voting stays in view when there are many columns, and "Add several at
+      once" is collapsed until opened and starts with one row.
 - [ ] Joining moves to a "Have a room code? Join a room" link under the
       create flow that opens the join form; "Your rooms" sits below that.
 
@@ -332,18 +335,18 @@ template are normal rooms: columns can still be added, renamed or deleted.
 
 Column types are only short text, yes/no and long text, so numbers and
 prices are short text (natural sort still orders `2` before `10`). ✓ = checked
-by default.
+by default; defaults are deliberately minimal (five each), the rest are opt-in.
 
 | Rental homes | Type | | Hotels | Type | | Restaurants | Type |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | ✓ Link | text | | ✓ Link | text | | ✓ Link | text |
 | ✓ Price per night | text | | ✓ Price per night | text | | ✓ Cuisine | text |
-| ✓ Bedrooms | text | | ✓ Star rating | text | | ✓ Price range | text |
+| ✓ Bedrooms | text | | Star rating | text | | ✓ Price range | text |
 | ✓ Bathrooms | text | | ✓ Guest rating | text | | ✓ Neighborhood | text |
-| ✓ Sleeps | text | | ✓ Neighborhood | text | | Rating | text |
-| Location | text | | ✓ Free breakfast | yes/no | | ✓ Takes reservations | yes/no |
-| ✓ Hot tub | yes/no | | ✓ Free cancellation | yes/no | | ✓ Vegetarian options | yes/no |
-| ✓ Pool table | yes/no | | Pool | yes/no | | Outdoor seating | yes/no |
+| Sleeps | text | | ✓ Neighborhood | text | | Rating | text |
+| Location | text | | Free breakfast | yes/no | | Takes reservations | yes/no |
+| Hot tub | yes/no | | Free cancellation | yes/no | | Vegetarian options | yes/no |
+| Pool table | yes/no | | Pool | yes/no | | Outdoor seating | yes/no |
 | Pool | yes/no | | Gym | yes/no | | Kid friendly | yes/no |
 | Pet friendly | yes/no | | Parking | yes/no | | Open late | yes/no |
 | Parking | yes/no | | Pet friendly | yes/no | | ✓ Notes | long text |
