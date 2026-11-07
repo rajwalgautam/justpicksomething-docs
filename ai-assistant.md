@@ -37,11 +37,69 @@ before building anything:
 
 | Option | Notes |
 | --- | --- |
-| Pay a small API bill | Breaks the strict free-only rule. Keep it bounded: a Haiku-class model, short answers, and the hard caps below. Set a monthly spend limit in the provider's console. |
+| Pay a small API bill | Breaks the strict free-only rule. Keep it bounded: a Haiku-class model, short answers, and the hard caps in [API access and spend cap](#api-access-and-spend-cap). |
 | A free-tier gateway | Neon offers an AI Gateway. Its free-tier allowance is **unconfirmed**; check the pricing page before relying on it. |
 | Don't ship it | Fine too. It's a nice-to-have, not core to picking. |
 
 Record the outcome in the [decisions log](project-plan.md#decisions-log).
+
+## API access and spend cap
+
+If we pay for the API, the backend gets its own access with a hard monthly cap
+enforced by Anthropic, not just by our code.
+
+**A claude.ai subscription (Pro/Max) doesn't cover API usage.** API calls are
+billed separately in the [Claude Console](https://platform.claude.com) with
+prepaid credits. The same login works there.
+
+### Setup (one time, by hand)
+
+1. Sign in to the Console, add billing, and buy a small amount of credit.
+2. Create a workspace `justpicksomething` (Settings → Workspaces). Don't use the
+   Default Workspace: spend limits can't be set on it.
+3. On that workspace, set **Spend limits**: the monthly cap, plus alerts at
+   e.g. 50% and 80%.
+4. Optionally set **workspace rate limits** (requests, input tokens and output
+   tokens per minute), so a burst of abuse can't use the whole month's budget
+   in an hour.
+5. Create a **service account** (Settings → Service accounts), add it to the
+   workspace, and create a key scoped to that workspace. A service account key
+   isn't tied to a personal user, and a workspace-scoped key can only spend
+   against this workspace's cap.
+6. Put the key in Vercel as `AI_API_KEY` (Production only) and in the local
+   `.env`. Never commit it.
+7. Leave **auto-reload** of credits off, so spend also can't pass the credit
+   bought. (Check this setting on the Billing page; it isn't covered in the
+   docs we read.)
+
+Record the cap amount in the [decisions log](project-plan.md#decisions-log)
+once it's picked.
+
+### Layers of the cap
+
+| Layer | Where | What happens when it's hit |
+| --- | --- | --- |
+| Our rate limits | Postgres table ([Limits](#limits)) | We return `429` before calling the API |
+| Workspace spend limit | Console → Workspaces | API returns `400` `invalid_request_error`, message starts with "You have reached your specified workspace API usage limits" |
+| Organization spend limit | Console → Settings → Billing | Same as the workspace limit, message without "workspace" |
+| Tier spend cap | Set by Anthropic (Start tier: $500/month) | API returns `429` with `error.details.error_code: "enforced_spend_limit_reached"` and no `retry-after` |
+| Prepaid credit | Console → Billing | Calls fail once credit runs out (auto-reload off) |
+
+Spend limits reset at the start of each calendar month (00:00 UTC on the 1st).
+
+### Backend handling
+
+- Treat a spend-limit `400`, or a `429` with `enforced_spend_limit_reached`,
+  as "AI is off until next month": return `503` so the frontend hides the Ask
+  box, and log it once.
+- Don't retry those errors. Retrying can't succeed until the limit resets, so
+  turn off the SDK's automatic retries for them.
+- Ordinary `429`s with a `retry-after` header are normal rate limits; return
+  `429` to the client.
+
+Sources: Anthropic docs on
+[rate limits and spend limits](https://platform.claude.com/docs/en/api/rate-limits)
+and [workspaces](https://platform.claude.com/docs/en/manage-claude/workspaces).
 
 ## v1 — "Ask the room" and comment summaries
 
@@ -89,8 +147,9 @@ Reuse the M5 Postgres rate-limit table (no Redis/KV):
 
 - Per member: N questions per hour.
 - Per room: N questions per day.
-- App-wide: a daily cap as the cost backstop. Once it's hit, return `503`
-  until the next day.
+- App-wide: a daily cap, so one bad day can't use the whole month's budget.
+  Once it's hit, return `503` until the next day. The hard monthly backstop is
+  the Console spend limit ([API access and spend cap](#api-access-and-spend-cap)).
 
 Pick the actual numbers once the cost decision is made.
 

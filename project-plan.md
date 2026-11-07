@@ -325,6 +325,10 @@ template are normal rooms: columns can still be added, renamed or deleted.
       in the same transaction as the room, so a template room is one request.
 - [ ] Templates are built into the frontend as constants (no database table
       yet). User-submitted templates stay in "Later".
+- [ ] Template columns can offer alternative names, switched with a small
+      dropdown in the checklist (e.g. "Price per night" → "Total price" or
+      "Price per person"). Only affects the create form: the room just gets a
+      column with the chosen name.
 
 Column types are only short text, yes/no and long text, so numbers and
 prices are short text (natural sort still orders `2` before `10`). ✓ = checked
