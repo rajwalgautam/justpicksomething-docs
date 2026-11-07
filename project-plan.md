@@ -279,11 +279,63 @@ poll.
 - [ ] "Add several at once" becomes a table with the room's columns; rows can
       be pasted from a spreadsheet (tab-separated).
 
-### M4 — Admins and members
+### M4 — Joining, templates, and members
 
-- [ ] Member list in the room; admin can promote/demote admins and remove members.
-- [ ] Room setting "everyone is admin" (default on for small casual rooms).
-- [ ] Admin can regenerate the passcode (existing members stay joined).
+#### Join a room from the home page
+
+Today you can only join by opening the room link. The home page gets a second
+path next to "Create a room":
+
+- [ ] **Join a room** form: room link *or* room code (the 10-character slug),
+      passcode, your name. Accepts a pasted full link and pulls the slug out.
+      Uses the existing `POST /rooms/{slug}/join`; on success, go to the room.
+- [ ] **Your rooms** on this device: rooms this browser has created or joined
+      (already in `localStorage`), newest first, so returning is one tap. No
+      API call; a room whose token stops working drops off the list.
+
+#### Templates
+
+Starting points for common decisions, picked on the home page when creating a
+room. A template pre-creates columns; you choose which ones with a
+multi-select (checkboxes, sensible ones pre-checked). Rooms made from a
+template are normal rooms: columns can still be added, renamed or deleted.
+
+- [ ] Home page "Create a room" offers **Start from scratch**, **Rental houses**,
+      **Hotels**, **Restaurants**. Picking a template shows its columns as
+      checkboxes and a suggested room name.
+- [ ] `POST /rooms` accepts `columns: [{name, type}]` (max 20) and creates them
+      in the same transaction as the room, so a template room is one request.
+- [ ] Templates are built into the frontend as constants (no database table
+      yet). User-submitted templates stay in "Later".
+
+Column types are only short text, yes/no and long text, so numbers and
+prices are short text (natural sort still orders `2` before `10`). ✓ = checked
+by default.
+
+| Rental houses | Type | | Hotels | Type | | Restaurants | Type |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| ✓ Link | text | | ✓ Link | text | | ✓ Link | text |
+| ✓ Price per night | text | | ✓ Price per night | text | | ✓ Cuisine | text |
+| ✓ Bedrooms | text | | ✓ Star rating | text | | ✓ Price range | text |
+| ✓ Bathrooms | text | | ✓ Guest rating | text | | ✓ Neighborhood | text |
+| ✓ Sleeps | text | | ✓ Neighborhood | text | | Rating | text |
+| Location | text | | ✓ Free breakfast | yes/no | | ✓ Takes reservations | yes/no |
+| ✓ Hot tub | yes/no | | ✓ Free cancellation | yes/no | | ✓ Vegetarian options | yes/no |
+| ✓ Pool table | yes/no | | Pool | yes/no | | Outdoor seating | yes/no |
+| Pool | yes/no | | Gym | yes/no | | Kid friendly | yes/no |
+| Pet friendly | yes/no | | Parking | yes/no | | Open late | yes/no |
+| Parking | yes/no | | Pet friendly | yes/no | | ✓ Notes | long text |
+| ✓ Notes | long text | | ✓ Notes | long text | | | |
+
+#### Admins and members
+
+- [ ] Member list in the room; admin can promote/demote admins and remove
+      members. Removing a member revokes their token and deletes their votes
+      and comments. The last admin can't demote or remove themselves.
+- [ ] Room setting "everyone is admin" (default off; when on, every member,
+      including people who join later, can do admin things).
+- [ ] Admin can regenerate the passcode (existing members stay joined; the
+      new passcode is shown once and saved to the admin's device).
 
 ### M5 — Hardening
 
@@ -302,10 +354,9 @@ poll.
 
 ### Later — "down the line" ideas
 
-- **Templates** (e.g. "Vacation rental" with link/bedrooms/bathrooms/hot tub
-  pre-defined). Start with a few built-in ones; a separate templates tab and
-  user-submitted templates after that. Rooms created from a template can still
-  add and edit columns.
+- **More templates:** a separate templates tab, user-submitted templates, and
+  templates that also set room settings (e.g. limited votes). Built-in
+  templates are in M4.
 - **Paste enrichment:** pasting an Airbnb or VRBO link pre-fills columns. Needs
   research — neither offers a public listing API, and scraping is fragile and may
   break their terms, so start with Open Graph tags (title, image) only.
@@ -325,6 +376,33 @@ poll.
     can, e.g. Cloudflare's mTLS rules.
   - Until then, the protections are HTTPS, the origin check, room passcodes,
     member tokens and the M5 rate limits.
+
+---
+
+## API security brainstorm
+
+Ideas for making the API harder to abuse, roughly in order of value for
+effort. Not commitments: pick from here into M5 or later. Current protections:
+HTTPS + HSTS, origin check (browsers only), bcrypt passcodes, random hashed
+member tokens, per-room scoping in every query, request size limits, generic
+500 messages.
+
+| Idea | Protects against | Effort | Free-tier impact | Suggested |
+| --- | --- | --- | --- | --- |
+| Rate-limit joins per IP and per room, with a short lockout after repeated wrong passcodes | Passcode guessing (6 chars from 31 = ~887M combos is fine only if guesses are slow) | Small (Postgres counter) | One extra query per join | M5 |
+| Rate-limit room creation per IP, plus a daily cap | Spam rooms filling Neon storage | Small | One extra query per create | M5 |
+| Cloudflare Turnstile on create and join | Bots that rotate IPs | Small | Free | M5 if rate limits aren't enough |
+| Per-room caps on members, comments, columns (items already capped by settings) | One room growing without bound | Small | None | M5 |
+| Least-privilege database roles: app role can only read/write rows; a separate role runs migrations | A bug or injection being able to drop tables | Small (Neon roles + grants) | None | M5 |
+| Token expiry and rotation; "sign out everywhere" for a member; removal revokes tokens | Stolen or leaked tokens working forever | Medium | None | Removal in M4, rest M5 |
+| Same error for "no such room" and "wrong passcode" on join | Confirming which room codes exist | Tiny | None | M5 |
+| Frontend security headers: Content-Security-Policy, `frame-ancestors 'none'`, `Referrer-Policy: strict-origin-when-cross-origin` | XSS stealing tokens from `localStorage`; clickjacking; room URLs leaking in referrers | Small (Next.js headers config) | None | M5 |
+| Move the token from `localStorage` to an `HttpOnly`, `Secure`, `SameSite=Strict` cookie scoped to `rajwalgautam.com` (the site and API are same-site) | XSS reading the token | Medium (cookie auth + CSRF review; the origin check already helps) | None | Later |
+| Cross-room access tests: every endpoint called with another room's token or IDs must fail | IDOR bugs as endpoints grow | Medium (needs DB tests) | None | M5, with the handler DB tests |
+| Dependency scanning: Dependabot, `govulncheck`, `npm audit` in CI | Known-vulnerable libraries | Small | GitHub Actions free minutes | M5 |
+| Alerting on spikes of 401/403/409 in Vercel logs | Noticing an attack at all | Small–medium | Check Hobby log retention | Later |
+| Vercel Firewall / attack challenge mode | Floods | Config only; check what Hobby includes | Unknown | When needed |
+| mTLS between a server-side proxy and the API (see Later) | Anything not coming through our own frontend | Large | Roughly doubles invocations | Later |
 
 ---
 
@@ -362,6 +440,11 @@ poll.
   splits on tabs and new lines only (not commas), so titles can contain commas.
 - **2026-10-29 — `items.fields`:** column values live in `fields`, not
   `values` (a reserved word in SQL).
+
+- **2026-11-07 — Templates are frontend constants:** three built-in templates
+  (Rental houses, Hotels, Restaurants) with a column checklist; the API only
+  learns about the chosen columns via `POST /rooms`. A templates table waits
+  until there are user-submitted templates.
 
 ## Open questions
 
