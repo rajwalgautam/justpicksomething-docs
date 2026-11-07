@@ -219,6 +219,14 @@ other's changes within a few seconds.
       Admins can click a value in the table to edit it in place (Enter or
       click-away saves, Escape cancels; yes/no saves on pick), or use the
       item panel. On phones, tapping a value opens the item panel.
+- [ ] Admins can delete an option (with its votes and comments): a × at the
+      end of each table row / corner of each phone card, or "Delete option" in
+      the item panel. Both ask first. `DELETE /rooms/{slug}/items/{id}`,
+      admin-only, not while locked.
+- [ ] Confirmations use one in-app dialog (`useConfirm()`), never the
+      browser's `confirm()` box: deleting options, columns and comments,
+      removing members, new passcode, voting changes, and lock-in. Destructive
+      ones have a red button; focus starts on Cancel; Escape cancels.
 - [ ] Room view becomes a comparison table (items as rows, columns as columns),
       with a card layout on mobile.
 - [ ] Drag to reorder columns and items (`@dnd-kit`, as in `workouts-ui`);
