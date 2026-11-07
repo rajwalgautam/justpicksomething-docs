@@ -216,6 +216,9 @@ other's changes within a few seconds.
 - [ ] Admin can add/rename/delete columns: `text` (single line), `boolean`,
       `textarea`.
 - [ ] Items get editable values per column (stored in `items.fields`).
+      Admins can click a value in the table to edit it in place (Enter or
+      click-away saves, Escape cancels; yes/no saves on pick), or use the
+      item panel. On phones, tapping a value opens the item panel.
 - [ ] Room view becomes a comparison table (items as rows, columns as columns),
       with a card layout on mobile.
 - [ ] Drag to reorder columns and items (`@dnd-kit`, as in `workouts-ui`);
@@ -302,11 +305,12 @@ desktops:
 - [ ] In the room, votes then comments are the first columns of the table,
       so they stay in view when there are many columns.
 - [ ] Adding options happens in an input row at the bottom of the table, lined
-      up with its columns (title plus a value per column). Enter adds it and it
-      appears in the table. Pasting rows from a spreadsheet fills several input
-      rows to add at once; helper text under the row says so. This replaces the
-      separate "Add an option" box and "Add several at once" section. On
-      phones the same input is a card under the option cards.
+      up with its columns (title plus a value per column), with a **+** button
+      outside the table to its right. Enter or + adds it and it appears in the
+      table. Pasting rows from a spreadsheet fills several input rows to add at
+      once; helper text under the table says so. This replaces the separate
+      "Add an option" box and "Add several at once" section. On phones the
+      same input is a card under the option cards, with + underneath.
 
 #### Join a room from the home page
 
@@ -465,7 +469,8 @@ member tokens, per-room scoping in every query, request size limits, generic
   lines or commas; one request, max 50, duplicates (ignoring case) skipped.
 - **2026-10-29 — M2 permissions:** only admins add/rename/delete/reorder
   columns and set the manual item order, since those are shared by everyone.
-  Any member edits item titles and values.
+  (Item titles and values were editable by any member; see the later
+  admin-only entry.)
 - **2026-10-29 — Default sort:** most votes first. "Manual order" is one of the
   sort options; dragging only works in it.
 - **2026-10-29 — Switching vote mode clears all votes:** thumbs votes (±1) and
@@ -479,6 +484,10 @@ member tokens, per-room scoping in every query, request size limits, generic
 - **2026-10-29 — `items.fields`:** column values live in `fields`, not
   `values` (a reserved word in SQL).
 
+- **2026-11-07 — Editing options is admin-only:** changing an option's title
+  or column values (in the table or the item panel) needs an admin, enforced by
+  the API. Any member can still add options, vote and comment. This replaces
+  the M2 rule that any member could edit item titles and values.
 - **2026-11-07 — Templates are frontend constants:** three built-in templates
   (Rental homes, Hotels, Restaurants) with a column checklist; the API only
   learns about the chosen columns via `POST /rooms`. A templates table waits
