@@ -316,10 +316,14 @@ desktops:
       heads its column with its votes and comment count directly under it;
       there's no separate "Option" column. On desktop the table fits the page
       width (no sideways scrolling). Phones keep one card per option.
-- [ ] **Adding options** happens in a form above the table: the name plus a
-      field per column, and a **+** button. No # or vote columns in it. Enter
-      adds; pasting rows from a spreadsheet fills several at once (helper text
-      says so). A room with no options shows just the form, no empty table.
+- [ ] **Adding options** happens in a collapsible "Add an option" section
+      above the table: the name plus a field per column, with the **+** at the
+      bottom right and an **Add another** checkbox beside it (like GitHub's
+      "Create more" for issues): checked, the form stays open and clears for
+      the next one; unchecked, it collapses after adding. No # or vote columns
+      in it. Enter adds; pasting rows from a spreadsheet fills several at once
+      (helper text says so). A room with no options shows just the form, open,
+      and no empty table.
 - [ ] **Nothing is required** to add an option. If the name is empty, it comes
       from a pasted link's page title, or from the link itself, or becomes
       "Untitled option".
@@ -332,8 +336,16 @@ desktops:
       [link import](link-import.md)), Booking.com (`202` bot check) and Yelp
       (`403`) don't.
 - [ ] **Links show as badges:** a value that's just a link shows as the domain
-      with ↗ (e.g. `vrbo.com ↗`) and opens the page. Long-press it, or use the ✎
-      on hover, to edit.
+      with ↗ (e.g. `vrbo.com ↗`) and opens the page.
+- [ ] **Editing a cell** (admins): every cell has a visible **✎** on its right;
+      clicking it turns the cell into an edit box (Enter or click-away saves,
+      Escape cancels). Clicking the value itself doesn't edit. Empty cells show
+      "—" with the same ✎.
+- [ ] **Comments on a cell:** each cell has a 💬 (with a count once it has
+      comments) that opens that cell's thread. Any member can comment. The
+      option's details panel lists all its comments, with cell comments
+      labelled ("on Price per night"). Comments get an optional `column_id`
+      (migration 6); deleting a row deletes its cell comments.
 - [ ] **Text boxes grow** taller as text wraps, when adding and editing.
 - [ ] **Names are edited in the table**, not a separate Columns panel. Admins
       get a **⋯** menu on each row label (Rename, Move up, Move down, Delete
