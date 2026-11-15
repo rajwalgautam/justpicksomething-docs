@@ -304,21 +304,42 @@ desktops:
       Deciding** ("Join an existing Decision"). "Decision" is capitalized on
       purpose, as a proper noun. Picking a tile replaces the tiles with that
       flow, with a "← Back" link to return.
-- [ ] **Decide:** "I want to decide on…" with a dropdown (Rental homes,
-      Hotels, Restaurants, Custom). Once picked: the room name (pre-filled) and
-      your name, then **Advanced options** on the left (the template's column
-      checklist; hidden for Custom) and the filled **Create room** button on the
+- [ ] **Decide:** "I want to decide on…" followed by tiles with simple black
+      and white icons: Rental homes, Hotels, Restaurants, Something else.
+      Picking one shows the room name (pre-filled) and your name, then
+      **Advanced options** on the left (the template's column checklist;
+      hidden for Something else) and the filled **Create room** button on the
       right.
 - [ ] **Keep Deciding:** the "Join a room" form, with "Your rooms" under it.
-- [ ] In the room, votes then comments are the first columns of the table,
-      so they stay in view when there are many columns.
-- [ ] Adding options happens in an input row at the bottom of the table, lined
-      up with its columns (title plus a value per column), with a **+** button
-      outside the table to its right. Enter or + adds it and it appears in the
-      table. Pasting rows from a spreadsheet fills several input rows to add at
-      once; helper text under the table says so. This replaces the separate
-      "Add an option" box and "Add several at once" section. On phones the
-      same input is a card under the option cards, with + underneath.
+- [ ] **Comparison table, flipped:** each option is a column and each detail
+      (Link, Price…) is a row, so options sit side by side. The option's name
+      heads its column with its votes and comment count directly under it;
+      there's no separate "Option" column. On desktop the table fits the page
+      width (no sideways scrolling). Phones keep one card per option.
+- [ ] **Adding options** happens in a form above the table: the name plus a
+      field per column, and a **+** button. No # or vote columns in it. Enter
+      adds; pasting rows from a spreadsheet fills several at once (helper text
+      says so). A room with no options shows just the form, no empty table.
+- [ ] **Nothing is required** to add an option. If the name is empty, it comes
+      from a pasted link's page title, or from the link itself, or becomes
+      "Untitled option".
+- [ ] **Link titles:** pasting a link (into the name or a link column) fetches
+      the page's title, the same text as the browser tab, and fills in the name
+      if it's empty. The API fetches it (browsers can't read other sites'
+      pages). Sites that block server fetches fall back to a name made from
+      the link, e.g. `vrbo.com/1234567`. Tested 2026-11-15 from a home
+      connection: Airbnb listings and ordinary sites work; VRBO (`429`, see
+      [link import](link-import.md)), Booking.com (`202` bot check) and Yelp
+      (`403`) don't.
+- [ ] **Links show as badges:** a value that's just a link shows as the domain
+      with ↗ (e.g. `vrbo.com ↗`) and opens the page. Long-press it, or use the ✎
+      on hover, to edit.
+- [ ] **Text boxes grow** taller as text wraps, when adding and editing.
+- [ ] **Names are edited in the table**, not a separate Columns panel. Admins
+      get a **⋯** menu on each row label (Rename, Move up, Move down, Delete
+      row) and on each option's header (Rename, Details, Delete). "+ Add row"
+      under the table adds a detail (name and type); in a room with no options
+      yet, the add form has the same "+ Add row".
 
 #### Join a room from the home page
 
@@ -429,6 +450,20 @@ by default; defaults are deliberately minimal (five each), the rest are opt-in.
     member tokens and the M5 rate limits.
 
 ---
+
+### Link title endpoint
+
+`POST /rooms/{slug}/link-title` (any member) with `{url}` returns `{title}` (or
+`{title: null}` if it couldn't get one). It fetches a stranger-supplied URL on
+the server, which is a classic server-side request forgery (SSRF) risk, so it:
+
+- accepts only `http`/`https` on ports 80 and 443;
+- resolves the host and refuses loopback, private, link-local, multicast,
+  unspecified and carrier-grade NAT addresses, at connect time and on every
+  redirect (at most 3);
+- gives up after 5 seconds and reads at most 1 MB;
+- reads only `<title>` (falling back to `og:title`) and returns nothing else;
+- identifies itself with a `JustPickSomething` User-Agent.
 
 ## API security brainstorm
 
