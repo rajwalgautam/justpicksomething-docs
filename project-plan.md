@@ -367,8 +367,10 @@ desktops:
       admins (the full editor opens in place), and the comments below.
 - [ ] **Comment kinds:** posting has four buttons instead of one: **Comment**
       (neutral), **!! Emphasis** (red), **👍 Thumbs up** (green), **👎 Thumbs
-      down** (orange). The kind shows as a colored tag; the three colored ones
-      can be posted without text. `comments.kind` (migration 8).
+      down** (orange). A signal comment gets a rounded border in its color
+      around the whole comment, with its symbol on the bottom-right corner;
+      the three colored ones can be posted without text. `comments.kind`
+      (migration 8).
 - [ ] **No Notes column in templates:** comments are the notes. (Existing
       rooms keep their Notes rows until an admin deletes them.)
 - [ ] **Comments stream** at the bottom of the room: every comment, newest
