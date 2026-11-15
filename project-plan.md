@@ -360,6 +360,17 @@ desktops:
       order from a palette of 8 (so the first eight people never share one;
       nothing stored), used on their name in comments, on the options they
       added, in the room header and as a dot in the People list.
+- [ ] **Commenter dots:** the 💬 on option headers and cells shows small dots
+      in the colors of the members who commented there.
+- [ ] **Option rail:** the option's 💬 (or its name) opens a side rail with a
+      compact card (name, votes, key values) with an **Edit** button for
+      admins (the full editor opens in place), and the comments below.
+- [ ] **Comment kinds:** posting has four buttons instead of one: **Comment**
+      (neutral), **!! Emphasis** (red), **👍 Thumbs up** (green), **👎 Thumbs
+      down** (orange). The kind shows as a colored tag; the three colored ones
+      can be posted without text. `comments.kind` (migration 8).
+- [ ] **No Notes column in templates:** comments are the notes. (Existing
+      rooms keep their Notes rows until an admin deletes them.)
 - [ ] **Comments stream** at the bottom of the room: every comment, newest
       first, filterable by option (#1, #2…) and/or row ("Whole option" or a
       row name). `GET /rooms/{slug}/comments`; it refetches only when the room
