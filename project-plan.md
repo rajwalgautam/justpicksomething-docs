@@ -375,7 +375,8 @@ desktops:
       rooms keep their Notes rows until an admin deletes them.)
 - [ ] **Comments stream** at the bottom of the room: every comment, newest
       first, filterable by option (#1, #2…) and/or row ("Whole option" or a
-      row name). `GET /rooms/{slug}/comments`; it refetches only when the room
+      row name). Filters are badges for only what has comments, with counts
+      that follow the other filter; click to filter, click again to clear. `GET /rooms/{slug}/comments`; it refetches only when the room
       changes, so it adds no polling.
 
 #### Join a room from the home page
