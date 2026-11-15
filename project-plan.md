@@ -321,8 +321,8 @@ desktops:
       bottom right and an **Add another** checkbox beside it (like GitHub's
       "Create more" for issues): checked, the form stays open and clears for
       the next one; unchecked, it collapses after adding. No # or vote columns
-      in it. Enter adds; pasting rows from a spreadsheet fills several at once
-      (helper text says so). A room with no options shows just the form, open,
+      in it. Enter adds; pasting rows from a spreadsheet fills several at
+      once. (No helper text.) A room with no options shows just the form, open,
       and no empty table.
 - [ ] **Nothing is required** to add an option. If the name is empty, it comes
       from a pasted link's page title, or from the link itself, or becomes
@@ -343,8 +343,8 @@ desktops:
       "—" with the same ✎.
 - [ ] **Comments on a cell:** each cell has a 💬 (with a count once it has
       comments) that opens that cell's thread. Any member can comment. The
-      option's details panel lists all its comments, with cell comments
-      labelled ("on Price per night"). Comments get an optional `column_id`
+      option's details panel lists all its comments; a cell comment has a
+      badge to the left of its text: "◦ Price per night". Comments get an optional `column_id`
       (migration 6); deleting a row deletes its cell comments.
 - [ ] **Text boxes grow** taller as text wraps, when adding and editing.
 - [ ] **Names are edited in the table**, not a separate Columns panel. Admins
@@ -352,6 +352,18 @@ desktops:
       row) and on each option's header (Rename, Details, Delete). "+ Add row"
       under the table adds a detail (name and type); in a room with no options
       yet, the add form has the same "+ Add row".
+- [ ] **Emphasis on comments:** any member can mark a comment ★ (positive) or
+      ⚑ (a concern, negative): one per member per comment, toggled like votes,
+      with counts. New table `comment_reactions` (migration 7); not while
+      locked.
+- [ ] **Member colors:** each member gets a color automatically, by join
+      order from a palette of 8 (so the first eight people never share one;
+      nothing stored), used on their name in comments, on the options they
+      added, in the room header and as a dot in the People list.
+- [ ] **Comments stream** at the bottom of the room: every comment, newest
+      first, filterable by option (#1, #2…) and/or row ("Whole option" or a
+      row name). `GET /rooms/{slug}/comments`; it refetches only when the room
+      changes, so it adds no polling.
 
 #### Join a room from the home page
 
