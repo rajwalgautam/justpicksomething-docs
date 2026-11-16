@@ -337,10 +337,9 @@ desktops:
       (`403`) don't.
 - [ ] **Links show as badges:** a value that's just a link shows as the domain
       with ↗ (e.g. `vrbo.com ↗`) and opens the page.
-- [ ] **Editing a cell** (admins): every cell has a visible **✎** on its right;
-      clicking it turns the cell into an edit box (Enter or click-away saves,
-      Escape cancels). Clicking the value itself doesn't edit. Empty cells show
-      "—" with the same ✎.
+- [ ] **Editing a cell** (admins): click the value to edit it (Enter or
+      click-away saves, Escape cancels). On a link badge, which opens the link
+      on click, a long press edits. A 💬 on the right appears on hover.
 - [ ] **Comments on a cell:** each cell has a 💬 (with a count once it has
       comments) that opens that cell's thread. Any member can comment. The
       option's details panel lists all its comments; a cell comment has a
